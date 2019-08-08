@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressBar;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
@@ -22,12 +23,19 @@ public class Controller {
     @FXML
     private MenuItem openMenuItem;
 
+    @FXML
+    private ProgressBar progressBar;
+
     File selectedDirectory = null;
 
     //Requires theStage to have been set
     public void initialize(){
         System.out.println("initializing");
-        
+
+    }
+
+    public ProgressBar getProgressBar(){
+        return progressBar;
     }
 
     public void initializeOpenMenuItem(Stage theStage){
@@ -42,12 +50,13 @@ public class Controller {
     }
 
     public void initializeGoButton(){
+        Controller controller = this;
 
         goButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 if (selectedDirectory != null) {
-
+                    Back.run(selectedDirectory, controller);
                 }
             }
         });
