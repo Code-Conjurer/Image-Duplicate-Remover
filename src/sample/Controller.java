@@ -67,7 +67,7 @@ public class Controller {
             @Override
             public void handle(ActionEvent event) {
                 if (selectedDirectory != null) {
-                    Back.run(selectedDirectory, controller);
+                    Back.execute(selectedDirectory, controller);
                 }
             }
         });

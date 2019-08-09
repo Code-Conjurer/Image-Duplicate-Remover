@@ -4,7 +4,7 @@ import javafx.scene.control.ProgressBar;
 
 public class ProgressHandler {
 
-    private int actions;
+    private double actions;
     private ProgressBar progressBar;
     private double currentProgress;
     public ProgressHandler(int actions, Controller controller){
@@ -17,8 +17,8 @@ public class ProgressHandler {
         currentProgress = 0;
     }
 
-    public void updatePrograss(){
-        double newProgress = currentProgress + (actions/100);
+    public void updateProgress(){
+        double newProgress = currentProgress + (100/actions);
         progressBar.setProgress(newProgress);
     }
 
