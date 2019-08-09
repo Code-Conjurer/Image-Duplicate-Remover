@@ -21,4 +21,6 @@ public class ProgressHandler {
         double newProgress = currentProgress + (actions/100);
         progressBar.setProgress(newProgress);
     }
+
+
 }

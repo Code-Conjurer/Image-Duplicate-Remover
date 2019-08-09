@@ -15,7 +15,10 @@ import java.io.File;
 public class Controller {
 
     @FXML
-    private Canvas leftCanvas, rightCanvas;
+    private Canvas leftCanvas;
+
+    @FXML
+    private Canvas rightCanvas;
 
     @FXML
     private Button goButton;
@@ -32,6 +35,14 @@ public class Controller {
     public void initialize(){
         System.out.println("initializing");
 
+    }
+
+    public Canvas getLeftCanvas(){
+        return leftCanvas;
+    }
+
+    public Canvas getRightCanvas(){
+        return rightCanvas;
     }
 
     public ProgressBar getProgressBar(){
