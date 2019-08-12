@@ -1,4 +1,4 @@
-package sample;
+package main;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -49,11 +49,11 @@ public class Controller {
         return progressBar;
     }
 
-    public void initializeOpenMenuItem(Stage theStage){
-        DirectoryChooser directoryChooser = new DirectoryChooser();
+    public void initializeOpenMenuItem(final Stage theStage){
+        final DirectoryChooser directoryChooser = new DirectoryChooser();
 
         openMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
+
             public void handle(ActionEvent event) {
                 selectedDirectory = directoryChooser.showDialog(theStage);
             }
@@ -61,10 +61,10 @@ public class Controller {
     }
 
     public void initializeGoButton(){
-        Controller controller = this;
+        final Controller controller = this;
 
         goButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
+
             public void handle(ActionEvent event) {
                 if (selectedDirectory != null) {
                     Back.execute(selectedDirectory, controller);

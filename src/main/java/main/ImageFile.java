@@ -1,7 +1,8 @@
-package sample;
+package main;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
+import javafx.scene.paint.Color;
 
 import java.io.File;
 
@@ -19,7 +20,7 @@ public class ImageFile{
 
     public ImageFile (File file){
         this.file = file;
-        image = new Image(file.toURI().toString(), WIDTH, HEIGHT, false, false);
+        image = new Image(file.toURI().toString(), WIDTH, HEIGHT, false, true);
         pixelReader = image.getPixelReader();
 
         System.out.println(image.getHeight() + " " + image.getWidth());
@@ -55,19 +56,33 @@ public class ImageFile{
         }*/
 
         PixelReader otherPixelReader = otherImage.getPixelReader();
-        double colorVariance = 0;
+        double colorVarianceRed = 0;
+        double colorOtherVarianceRed = 0;
+        double colorVarianceGreen = 0;
+        double colorOtherVarianceGreen = 0;
+        double colorVarianceBlue = 0;
+        double colorOtherVarianceBlue = 0;
+        Color tempColor, otherTempColor;
 
         for(int j = 0 ; j < image.getHeight(); j++){
             for(int i = 0; i < image.getWidth(); i++){
-                colorVariance += pixelReader.getArgb(i, j) - otherPixelReader.getArgb(i,j);
+                tempColor = pixelReader.getColor(i,j);
+                otherTempColor = otherPixelReader.getColor(i,j);
+                colorVarianceRed += tempColor.getRed() - otherTempColor.getRed();
+                colorOtherVarianceRed += tempColor.getRed() - otherTempColor.getRed();
+                colorVarianceGreen += tempColor.getGreen() - otherTempColor.getGreen();
+                colorOtherVarianceGreen += tempColor.getGreen() - otherTempColor.getGreen();
+                colorVarianceBlue += tempColor.getBlue() - otherTempColor.getBlue();
+                colorOtherVarianceBlue += tempColor.getBlue() - otherTempColor.getBlue();
             }
         }
-        colorVariance /= image.getHeight() * image.getWidth();
-        //System.out.println("color variance " + colorVariance);
-        if(colorVariance < 1 && colorVariance > -1)
+
+        //colorVarianceRed /= HEIGHT * WIDTH;
+        //colorVarianceGreen /= HEIGHT * WIDTH;
+        //colorVarianceBlue /= HEIGHT * WIDTH;
+        //colorVariance /= image.getHeight() * image.getWidth();
+        System.out.println((colorVarianceRed - colorOtherVarianceRed) + " " + (colorVarianceGreen - colorOtherVarianceGreen) + " " + (colorVarianceBlue - colorOtherVarianceBlue));
             return true;
-        else
-            return false;
     }
 
     //TODO: reorganize logic?
