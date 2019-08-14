@@ -28,8 +28,8 @@ public class MainTask extends Task<Void> {
 
         File[] imageFilesDir = selectedDirectory.listFiles(new ImageFileFiler());
 
-        progressHandler.setActions(imageFilesDir.length);
-
+        progressHandler.setActions(imageFilesDir.length * imageFilesDir.length);
+        System.out.println(imageFilesDir.length * imageFilesDir.length);
         ArrayList<ImageFile> images = new ArrayList<ImageFile>(0);
 
         for (File f : imageFilesDir) {
@@ -42,6 +42,7 @@ public class MainTask extends Task<Void> {
                 ////////////////////////////////////////////////////////////
                 Platform.runLater(new Runnable() {
                     public void run() {
+                        progressHandler.updateProgress();
                         canvasHandler.drawLeft(image1.getImage());
                     }
                 });
@@ -51,6 +52,7 @@ public class MainTask extends Task<Void> {
                     /////////////////////////////////////////////////////////
                     Platform.runLater(new Runnable() {
                         public void run() {
+                            progressHandler.updateProgress();
                             canvasHandler.drawRight(image2.getImage());
                         }
                     });
@@ -71,7 +73,6 @@ public class MainTask extends Task<Void> {
         }catch (IOException e){
             System.out.println(e);
         }
-
         return null;
     }
 

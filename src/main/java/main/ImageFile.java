@@ -5,9 +5,6 @@ import java.io.File;
 
 public class ImageFile{
 
-    //final static double WIDTH  = 512;
-    //final static double HEIGHT = 512;
-
     private File file;
     private Image image;
     private boolean markForDeletion = false;

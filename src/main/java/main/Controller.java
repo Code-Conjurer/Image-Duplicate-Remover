@@ -65,7 +65,8 @@ public class Controller {
 
             public void handle(ActionEvent event) {
                 selectedDirectory = directoryChooser.showDialog(theStage);
-                directoryLabel.setText(selectedDirectory.toURI().toString());
+                if(selectedDirectory != null)
+                    directoryLabel.setText(selectedDirectory.toURI().toString());
             }
         });
     }
@@ -77,6 +78,7 @@ public class Controller {
 
             public void handle(ActionEvent event) {
                 if (selectedDirectory != null) {
+                    progressHandler.resetProgress();
                     Task<Void> mainTask = new MainTask(selectedDirectory, progressHandler, canvasHandler);
                     Thread th = new Thread(mainTask);
                     th.setDaemon(true);

@@ -29,8 +29,6 @@ public class ImageFileMatcher{
 
     private static  boolean isDuplicateAlgo(Hash hash1, Hash hash2){
 
-        //Compute a similarity score
-        // Ranges between 0 - 1. The lower the more similar the images are.
         double similarityScore = hash1.normalizedHammingDistance(hash2);
 
         return similarityScore < 0.4d;
