@@ -6,9 +6,9 @@ import com.github.kilianB.hashAlgorithms.HashingAlgorithm;
 
 import java.io.IOException;
 
-public class ImageFileMatcher {
+public class ImageFileMatcher{
 
-    final static int KEY_BIT_RESOLUTION = 64;
+    final static int KEY_BIT_RESOLUTION = 256;
     final static HashingAlgorithm hasher = new AverageHash(KEY_BIT_RESOLUTION);
 
     public static HashingAlgorithm getHasher(){

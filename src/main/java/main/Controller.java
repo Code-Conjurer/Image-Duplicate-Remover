@@ -1,10 +1,12 @@
 package main;
 
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.stage.DirectoryChooser;
@@ -29,11 +31,18 @@ public class Controller {
     @FXML
     private ProgressBar progressBar;
 
-    File selectedDirectory = null;
+    @FXML
+    private Label directoryLabel;
+
+    private File selectedDirectory = null;
+    private ProgressHandler progressHandler;
+    private CanvasHandler canvasHandler;
 
     //Requires theStage to have been set
     public void initialize(){
         System.out.println("initializing");
+        progressHandler = new ProgressHandler(this);
+        canvasHandler = new CanvasHandler(this);
 
     }
 
@@ -56,6 +65,7 @@ public class Controller {
 
             public void handle(ActionEvent event) {
                 selectedDirectory = directoryChooser.showDialog(theStage);
+                directoryLabel.setText(selectedDirectory.toURI().toString());
             }
         });
     }
@@ -67,7 +77,11 @@ public class Controller {
 
             public void handle(ActionEvent event) {
                 if (selectedDirectory != null) {
-                    Back.execute(selectedDirectory, controller);
+                    Task<Void> mainTask = new MainTask(selectedDirectory, progressHandler, canvasHandler);
+                    Thread th = new Thread(mainTask);
+                    th.setDaemon(true);
+                    th.start();
+
                 }
             }
         });
