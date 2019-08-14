@@ -19,7 +19,7 @@ public class Main extends Application {
         controller.initializeOpenMenuItem(primaryStage);
         controller.initializeGoButton();
 
-        primaryStage.setTitle("Image Duplicate Remover!");
+        primaryStage.setTitle("Image Duplicate Remover!!");
         debugScene = new Scene(root, 900, 700);//////////////////////////////////////////////////////////////////
         primaryStage.setScene(debugScene);
         primaryStage.show();
