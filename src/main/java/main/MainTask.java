@@ -62,9 +62,8 @@ public class MainTask extends Task<Void> {
                         if (ImageFileMatcher.isDuplicate(hash1, image2)) {
 
                             System.out.println(image1.getFile().getName() + " " + image2.getFile().getName());
-                            //canvasHandler.drawLeft(image1.getImage());
-                            //canvasHandler.drawRight(image2.getImage());
-                            RequestDeletion(image2);
+                            canvasHandler.drawLeft(image1.getImage());
+                            canvasHandler.drawRight(image2.getImage());
 
                         }
                     }
@@ -74,10 +73,6 @@ public class MainTask extends Task<Void> {
             System.out.println(e);
         }
         return null;
-    }
-
-    private void RequestDeletion(ImageFile image){
-        image.markForDeletion();
     }
 }
 

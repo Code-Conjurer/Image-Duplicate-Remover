@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
@@ -34,6 +35,13 @@ public class Controller {
     @FXML
     private Label directoryLabel;
 
+    @FXML
+    private AnchorPane leftCanvasParent;
+
+    @FXML
+    private AnchorPane rightCanvasParent;
+
+
     private File selectedDirectory = null;
     private ProgressHandler progressHandler;
     private CanvasHandler canvasHandler;
@@ -41,6 +49,11 @@ public class Controller {
     //Requires theStage to have been set
     public void initialize(){
         System.out.println("initializing");
+        leftCanvas.widthProperty().bind(leftCanvasParent.widthProperty());
+        leftCanvas.heightProperty().bind(leftCanvasParent.heightProperty());
+        rightCanvas.widthProperty().bind(rightCanvasParent.widthProperty());
+        rightCanvas.heightProperty().bind(rightCanvasParent.heightProperty());
+
         progressHandler = new ProgressHandler(this);
         canvasHandler = new CanvasHandler(this);
 
@@ -77,6 +90,7 @@ public class Controller {
         goButton.setOnAction(new EventHandler<ActionEvent>() {
 
             public void handle(ActionEvent event) {
+                System.out.println(leftCanvas.getWidth());
                 if (selectedDirectory != null) {
                     progressHandler.resetProgress();
                     Task<Void> mainTask = new MainTask(selectedDirectory, progressHandler, canvasHandler);

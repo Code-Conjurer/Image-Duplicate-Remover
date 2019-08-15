@@ -35,17 +35,23 @@
    <center>
       <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <center>
-            <SplitPane dividerPositions="0.5063291139240507" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <SplitPane dividerPositions="0.5" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
               <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                <AnchorPane fx:id="leftCanvasParent" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                      <children>
                         <Canvas fx:id="leftCanvas" height="360.0" layoutX="-1.0" width="255.0" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="-1.0" AnchorPane.topAnchor="0.0" />
                      </children>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
                   </AnchorPane>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="222.0">
+                <AnchorPane fx:id="rightCanvasParent" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="222.0">
                      <children>
                         <Canvas fx:id="rightCanvas" height="360.0" layoutX="-15.0" layoutY="-1.0" width="248.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-1.0" />
                      </children>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
                   </AnchorPane>
               </items>
             </SplitPane>
@@ -53,6 +59,13 @@
          <top>
             <Label fx:id="directoryLabel" BorderPane.alignment="CENTER" />
          </top>
+         <bottom>
+            <Button fx:id="SkipButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="243.0" text="Skip" textAlignment="CENTER" BorderPane.alignment="CENTER">
+               <BorderPane.margin>
+                  <Insets />
+               </BorderPane.margin>
+            </Button>
+         </bottom>
       </BorderPane>
    </center>
    <top>
