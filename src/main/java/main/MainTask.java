@@ -12,14 +12,12 @@ import java.util.ArrayList;
 public class MainTask extends Task<Void> {
 
     private final File selectedDirectory;
-    private final ProgressHandler progressHandler;
-    private final CanvasHandler canvasHandler;
     private final RequestHandler requestHandler;
 
-    public MainTask(File selectedDirectory, ProgressHandler progressHandler, CanvasHandler canvasHandler, RequestHandler requestHandler){
+    public MainTask(File selectedDirectory, RequestHandler requestHandler){
         this.selectedDirectory = selectedDirectory;
-        this.progressHandler = progressHandler;
-        this.canvasHandler = canvasHandler;
+        //this.progressHandler = progressHandler;
+        //this.canvasHandler = canvasHandler;
         this.requestHandler = requestHandler;
     }
 
@@ -27,7 +25,7 @@ public class MainTask extends Task<Void> {
 
         File[] imageFilesDir = selectedDirectory.listFiles(new ImageFileFiler());
 
-        progressHandler.setActions(imageFilesDir.length * imageFilesDir.length);
+        requestHandler.requestInitializeProgressActions(imageFilesDir.length * imageFilesDir.length);
         System.out.println(imageFilesDir.length * imageFilesDir.length);
         ArrayList<ImageFile> images = new ArrayList<ImageFile>(0);
 
@@ -39,30 +37,18 @@ public class MainTask extends Task<Void> {
             for (final ImageFile leftImageFile : images) {
                 Hash hash1 = ImageFileMatcher.getHasher().hash(leftImageFile.getFile());
                 ////////////////////////////////////////////////////////////
-                Platform.runLater(new Runnable() {
-                    public void run() {
-                        progressHandler.updateProgress();
-                        canvasHandler.drawLeft(leftImageFile.getImage());
-                    }
-                });
+                requestHandler.requestDrawLeftAndUpdateProgress(leftImageFile.getImage());
                 /////////////////////////////////////////////////////////////
 
                 for (final ImageFile rightImageFile : images) {
-                    /////////////////////////////////////////////////////////
-                    Platform.runLater(new Runnable() {
-                        public void run() {
-                            progressHandler.updateProgress();
-                            canvasHandler.drawRight(rightImageFile.getImage());
-                        }
-                    });
-                    ///////////////////////////////////////////////////////////
+                    requestHandler.requestDrawRightAndUpdateProgress(rightImageFile.getImage());
 
                     if (!(leftImageFile.isMarkedForDeletion() || rightImageFile.isMarkedForDeletion()) && leftImageFile.getFile() != rightImageFile.getFile()) {
                         if (ImageFileMatcher.isDuplicate(hash1, rightImageFile)) {
 
                             System.out.println(leftImageFile.getFile().getName() + " " + rightImageFile.getFile().getName());
-                            canvasHandler.drawLeft(leftImageFile.getImage());
-                            canvasHandler.drawRight(rightImageFile.getImage());
+                            requestHandler.requestDrawLeft(leftImageFile.getImage());
+                            requestHandler.requestDrawRight(rightImageFile.getImage());
                             requestHandler.requestDeletion(leftImageFile, rightImageFile);
 
 

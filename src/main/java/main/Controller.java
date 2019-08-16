@@ -62,7 +62,7 @@ public class Controller{
 
         progressHandler = new ProgressHandler(progressBar);
         canvasHandler = new CanvasHandler(leftCanvas, rightCanvas);
-        requestHandler = new RequestHandler(this);
+        requestHandler = new RequestHandler(this, progressHandler, canvasHandler);
         taskThread = new Thread();  //dummy thread
 
         //requestHandler.addObserver(this);
@@ -87,7 +87,7 @@ public class Controller{
         goButton.setDisable(true);
         if (selectedDirectory != null && !taskThread.isAlive()) {
             progressHandler.resetProgress();
-            Task<Void> mainTask = new MainTask(selectedDirectory, progressHandler, canvasHandler, requestHandler);
+            Task<Void> mainTask = new MainTask(selectedDirectory, requestHandler);
             taskThread = new Thread(mainTask);
             taskThread.setDaemon(true);
             taskThread.start();

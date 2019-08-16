@@ -48,7 +48,7 @@ public class CanvasHandler {
     }
 
     private void setToolTip(Tooltip toolTip, String fileName, double width, double height){
-        toolTip.setText(fileName + "    " + width + "x" + height);
+        toolTip.setText("DELETE: " + fileName + "    " + width + "x" + height);
     }
 
     private void hideToolTip(Canvas canvas, Tooltip toolTip){
