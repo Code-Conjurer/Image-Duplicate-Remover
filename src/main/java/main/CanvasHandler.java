@@ -10,9 +10,9 @@ public class CanvasHandler {
     private CanvasRunnable leftCanvasRunnable, rightCanvasRunnable;
     //private GraphicsContext leftGC, rightGC;
 
-    public CanvasHandler(Controller controller){
-        leftCanvas = controller.getLeftCanvas();
-        rightCanvas = controller.getRightCanvas();
+    public CanvasHandler(Canvas leftCanvas, Canvas rightCanvas){
+        leftCanvas = leftCanvas;
+        rightCanvas = rightCanvas;
         //leftGC = leftCanvas.getGraphicsContext2D();
         //rightGC = rightCanvs.getGraphicsContext2D();
     }

@@ -17,7 +17,7 @@ public class Main extends Application {
         Controller controller = loader.getController();
 
         controller.initializeOpenMenuItem(primaryStage);
-        controller.initializeGoButton();
+        //controller.initializeGoButton();
 
         primaryStage.setTitle("Image Duplicate Remover!!");
         debugScene = new Scene(root, 900, 700);//////////////////////////////////////////////////////////////////

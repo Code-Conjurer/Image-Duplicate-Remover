@@ -1,6 +1,6 @@
 package main;
 
-enum Response{
+enum DeleteResponse{
     LEFT, RIGHT, SKIP
         }
 

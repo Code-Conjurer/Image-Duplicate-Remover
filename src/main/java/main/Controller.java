@@ -14,9 +14,6 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Controller {
 
@@ -50,6 +47,7 @@ public class Controller {
     private CanvasHandler canvasHandler;
     private RequestHandler requestHandler;
     private Thread taskThread;
+    private boolean taskRunning = false;
 
     //Requires theStage to have been set
     public void initialize(){
@@ -59,23 +57,10 @@ public class Controller {
         rightCanvas.widthProperty().bind(rightCanvasParent.widthProperty());
         rightCanvas.heightProperty().bind(rightCanvasParent.heightProperty());
 
-        progressHandler = new ProgressHandler(this);
-        canvasHandler = new CanvasHandler(this);
+        progressHandler = new ProgressHandler(progressBar);
+        canvasHandler = new CanvasHandler(leftCanvas, rightCanvas);
         requestHandler = new RequestHandler(this);
         taskThread = new Thread();  //dummy thread
-
-    }
-
-    public Canvas getLeftCanvas(){
-        return leftCanvas;
-    }
-
-    public Canvas getRightCanvas(){
-        return rightCanvas;
-    }
-
-    public ProgressBar getProgressBar(){
-        return progressBar;
     }
 
     public void initializeOpenMenuItem(final Stage theStage){
@@ -91,21 +76,17 @@ public class Controller {
         });
     }
 
-    public void initializeGoButton(){
-        goButton.setOnAction(new EventHandler<ActionEvent>() {
-
-            public void handle(ActionEvent event) {
-                goButton.setDisable(true);
-                if (selectedDirectory != null && !taskThread.isAlive()) {
-                    progressHandler.resetProgress();
-                    Task<Void> mainTask = new MainTask(selectedDirectory, progressHandler, canvasHandler, requestHandler);
-                    taskThread = new Thread(mainTask);
-                    taskThread.setDaemon(true);
-                    taskThread.start();
-                }
-                goButton.setDisable(false);
-            }
-        });
+    @FXML
+    public void goButtonClicked(){
+        goButton.setDisable(true);
+        if (selectedDirectory != null && !taskThread.isAlive()) {
+            progressHandler.resetProgress();
+            Task<Void> mainTask = new MainTask(selectedDirectory, progressHandler, canvasHandler, requestHandler);
+            taskThread = new Thread(mainTask);
+            taskThread.setDaemon(true);
+            taskThread.start();
+        }
+        goButton.setDisable(false);
     }
 
     public void response(){

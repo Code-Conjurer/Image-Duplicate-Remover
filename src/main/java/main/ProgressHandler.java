@@ -8,9 +8,9 @@ public class ProgressHandler {
     private ProgressBar progressBar;
     private double currentProgress;
 
-    public ProgressHandler(Controller controller){
+    public ProgressHandler(ProgressBar progressBar){
         actions = -1;
-        this.progressBar = controller.getProgressBar();
+        this.progressBar = progressBar;
     }
 
     public void setActions(int actions){
