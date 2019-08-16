@@ -2,26 +2,25 @@ package main;
 
 import com.github.kilianB.hash.Hash;
 import javafx.application.Platform;
-import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import javafx.scene.image.Image;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Observable;
 
 public class MainTask extends Task<Void> {
 
     private final File selectedDirectory;
     private final ProgressHandler progressHandler;
     private final CanvasHandler canvasHandler;
+    private final RequestHandler requestHandler;
 
-    public MainTask(File selectedDirectory, ProgressHandler progressHandler, CanvasHandler canvasHandler){
+    public MainTask(File selectedDirectory, ProgressHandler progressHandler, CanvasHandler canvasHandler, RequestHandler requestHandler){
         this.selectedDirectory = selectedDirectory;
         this.progressHandler = progressHandler;
         this.canvasHandler = canvasHandler;
+        this.requestHandler = requestHandler;
     }
 
     protected Void call() throws Exception {
@@ -64,6 +63,7 @@ public class MainTask extends Task<Void> {
                             System.out.println(image1.getFile().getName() + " " + image2.getFile().getName());
                             canvasHandler.drawLeft(image1.getImage());
                             canvasHandler.drawRight(image2.getImage());
+
 
                         }
                     }

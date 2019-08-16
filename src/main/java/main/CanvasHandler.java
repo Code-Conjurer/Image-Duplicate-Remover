@@ -18,6 +18,7 @@ public class CanvasHandler {
     }
 
     public void drawLeft(Image image){
+
         draw(image, leftCanvas);
     }
     public void drawRight(Image image){

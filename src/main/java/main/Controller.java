@@ -14,6 +14,9 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Controller {
 
@@ -45,6 +48,8 @@ public class Controller {
     private File selectedDirectory = null;
     private ProgressHandler progressHandler;
     private CanvasHandler canvasHandler;
+    private RequestHandler requestHandler;
+    private Thread taskThread;
 
     //Requires theStage to have been set
     public void initialize(){
@@ -56,6 +61,8 @@ public class Controller {
 
         progressHandler = new ProgressHandler(this);
         canvasHandler = new CanvasHandler(this);
+        requestHandler = new RequestHandler(this);
+        taskThread = new Thread();  //dummy thread
 
     }
 
@@ -85,22 +92,26 @@ public class Controller {
     }
 
     public void initializeGoButton(){
-        final Controller controller = this;
-
         goButton.setOnAction(new EventHandler<ActionEvent>() {
 
             public void handle(ActionEvent event) {
-                System.out.println(leftCanvas.getWidth());
-                if (selectedDirectory != null) {
+                goButton.setDisable(true);
+                if (selectedDirectory != null && !taskThread.isAlive()) {
                     progressHandler.resetProgress();
-                    Task<Void> mainTask = new MainTask(selectedDirectory, progressHandler, canvasHandler);
-                    Thread th = new Thread(mainTask);
-                    th.setDaemon(true);
-                    th.start();
-
+                    Task<Void> mainTask = new MainTask(selectedDirectory, progressHandler, canvasHandler, requestHandler);
+                    taskThread = new Thread(mainTask);
+                    taskThread.setDaemon(true);
+                    taskThread.start();
                 }
+                goButton.setDisable(false);
             }
         });
+    }
+
+    public void response(){
+        synchronized (this){
+            notify();
+        }
     }
 
 }
