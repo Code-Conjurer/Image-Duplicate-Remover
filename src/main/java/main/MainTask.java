@@ -36,33 +36,34 @@ public class MainTask extends Task<Void> {
         }
 
         try {
-            for (final ImageFile image1 : images) {
-                Hash hash1 = ImageFileMatcher.getHasher().hash(image1.getFile());
+            for (final ImageFile leftImageFile : images) {
+                Hash hash1 = ImageFileMatcher.getHasher().hash(leftImageFile.getFile());
                 ////////////////////////////////////////////////////////////
                 Platform.runLater(new Runnable() {
                     public void run() {
                         progressHandler.updateProgress();
-                        canvasHandler.drawLeft(image1.getImage());
+                        canvasHandler.drawLeft(leftImageFile.getImage());
                     }
                 });
                 /////////////////////////////////////////////////////////////
 
-                for (final ImageFile image2 : images) {
+                for (final ImageFile rightImageFile : images) {
                     /////////////////////////////////////////////////////////
                     Platform.runLater(new Runnable() {
                         public void run() {
                             progressHandler.updateProgress();
-                            canvasHandler.drawRight(image2.getImage());
+                            canvasHandler.drawRight(rightImageFile.getImage());
                         }
                     });
                     ///////////////////////////////////////////////////////////
 
-                    if (!(image1.isMarkedForDeletion() || image2.isMarkedForDeletion()) && image1.getFile() != image2.getFile()) {
-                        if (ImageFileMatcher.isDuplicate(hash1, image2)) {
+                    if (!(leftImageFile.isMarkedForDeletion() || rightImageFile.isMarkedForDeletion()) && leftImageFile.getFile() != rightImageFile.getFile()) {
+                        if (ImageFileMatcher.isDuplicate(hash1, rightImageFile)) {
 
-                            System.out.println(image1.getFile().getName() + " " + image2.getFile().getName());
-                            canvasHandler.drawLeft(image1.getImage());
-                            canvasHandler.drawRight(image2.getImage());
+                            System.out.println(leftImageFile.getFile().getName() + " " + rightImageFile.getFile().getName());
+                            canvasHandler.drawLeft(leftImageFile.getImage());
+                            canvasHandler.drawRight(rightImageFile.getImage());
+                            requestHandler.requestDeletion(leftImageFile, rightImageFile);
 
 
                         }

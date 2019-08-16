@@ -60,7 +60,7 @@
             <Label fx:id="directoryLabel" BorderPane.alignment="CENTER" />
          </top>
          <bottom>
-            <Button fx:id="SkipButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="243.0" text="Skip" textAlignment="CENTER" BorderPane.alignment="CENTER">
+            <Button fx:id="skipButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="243.0" text="Skip" textAlignment="CENTER" BorderPane.alignment="CENTER">
                <BorderPane.margin>
                   <Insets />
                </BorderPane.margin>

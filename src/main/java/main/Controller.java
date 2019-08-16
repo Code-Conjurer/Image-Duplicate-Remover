@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 
-public class Controller {
+public class Controller{
 
     @FXML
     private Canvas leftCanvas;
@@ -25,6 +25,9 @@ public class Controller {
 
     @FXML
     private Button goButton;
+
+    @FXML
+    private Button skipButton;
 
     @FXML
     private MenuItem openMenuItem;
@@ -47,7 +50,7 @@ public class Controller {
     private CanvasHandler canvasHandler;
     private RequestHandler requestHandler;
     private Thread taskThread;
-    private boolean taskRunning = false;
+    //private boolean taskRunning = false;
 
     //Requires theStage to have been set
     public void initialize(){
@@ -61,6 +64,9 @@ public class Controller {
         canvasHandler = new CanvasHandler(leftCanvas, rightCanvas);
         requestHandler = new RequestHandler(this);
         taskThread = new Thread();  //dummy thread
+
+        //requestHandler.addObserver(this);
+        skipButton.setDisable(true);
     }
 
     public void initializeOpenMenuItem(final Stage theStage){
@@ -89,10 +95,11 @@ public class Controller {
         goButton.setDisable(false);
     }
 
-    public void response(){
-        synchronized (this){
-            notify();
+    //This will run in MainTask thread
+    public void requestDeletion(ImageFile imageFileLeft, ImageFile imageFileRight) {
+        synchronized (this) {
+            skipButton.setDisable(false);
+            //TODO
         }
     }
-
 }

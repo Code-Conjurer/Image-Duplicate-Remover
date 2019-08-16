@@ -1,5 +1,8 @@
 package main;
 
+
+import java.util.Observable;
+
 enum DeleteResponse{
     LEFT, RIGHT, SKIP
         }
@@ -7,7 +10,7 @@ enum DeleteResponse{
 public class RequestHandler{
 
     private Controller controller;
-    private boolean isWaiting;
+    private DeleteResponse deleteResponse;
 
     public RequestHandler(Controller controller){
         this.controller = controller;
@@ -16,15 +19,14 @@ public class RequestHandler{
     public boolean requestDeletion(ImageFile imageFileLeft, ImageFile imageFileRight) throws InterruptedException{
 
         synchronized (this){
-            isWaiting = true;
+            deleteResponse = null;
+            controller.requestDeletion(imageFileLeft, imageFileRight);
             wait();
-
+            //TODO
         }
 
         return true;
     }
 
-    public boolean isWaiting(){
-        return isWaiting;
-    }
+
 }

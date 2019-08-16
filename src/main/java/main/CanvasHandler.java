@@ -2,19 +2,17 @@ package main;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 
 public class CanvasHandler {
 
     private Canvas leftCanvas, rightCanvas;
-    private CanvasRunnable leftCanvasRunnable, rightCanvasRunnable;
-    //private GraphicsContext leftGC, rightGC;
+    private Tooltip leftToolTip, rightToolTip;
 
     public CanvasHandler(Canvas leftCanvas, Canvas rightCanvas){
-        leftCanvas = leftCanvas;
-        rightCanvas = rightCanvas;
-        //leftGC = leftCanvas.getGraphicsContext2D();
-        //rightGC = rightCanvs.getGraphicsContext2D();
+        this.leftCanvas = leftCanvas;
+        this.rightCanvas = rightCanvas;
     }
 
     public void drawLeft(Image image){
@@ -25,6 +23,42 @@ public class CanvasHandler {
         draw(image, rightCanvas);
     }
 
+    public void setLeftToolTip(String fileName, double width, double height){
+        setToolTip(leftToolTip, fileName, width, height);
+    }
+
+    public void setRightToolTip(String fileName, double width, double height){
+        setToolTip(rightToolTip, fileName, width, height);
+    }
+
+    public void hideLeftToolTip(){
+        hideToolTip(leftCanvas, leftToolTip);
+    }
+
+    public void hideRightToolTip(){
+        hideToolTip(rightCanvas, rightToolTip);
+    }
+
+    public void showRightToolTip(){
+        showToolTip(rightCanvas, rightToolTip);
+    }
+
+    public void showLeftToolTip(){
+        showToolTip(rightCanvas, rightToolTip);
+    }
+
+    private void setToolTip(Tooltip toolTip, String fileName, double width, double height){
+        toolTip.setText(fileName + "    " + width + "x" + height);
+    }
+
+    private void hideToolTip(Canvas canvas, Tooltip toolTip){
+        Tooltip.uninstall(canvas, toolTip);
+    }
+
+    private void showToolTip(Canvas canvas, Tooltip toolTip){
+        Tooltip.install(canvas, toolTip);
+    }
+
     private void draw(Image image, Canvas canvas){
         if(image == null) return;
         GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -32,43 +66,6 @@ public class CanvasHandler {
 
     }
 
-}
 
-abstract class CanvasRunnable implements Runnable {
-    protected final CanvasHandler canvasHandler;
-    protected Image image;
 
-    protected CanvasRunnable(CanvasHandler canvasHandler) {
-        this.canvasHandler = canvasHandler;
-    }
-
-    public void setImage(Image image) {
-        this.image = image;
-    }
-
-    abstract public void run();
-}
-
-class LeftCanvasRunnable extends CanvasRunnable{
-
-    public LeftCanvasRunnable(CanvasHandler canvasHandler){
-        super(canvasHandler);
-    }
-
-    public void run() {
-        if(super.image == null) return;
-        canvasHandler.drawLeft(super.image);
-    }
-}
-
-class RightCanvasRunnable extends CanvasRunnable{
-
-    public RightCanvasRunnable(CanvasHandler canvasHandler){
-        super(canvasHandler);
-    }
-
-    public void run() {
-        if(super.image == null) return;
-        canvasHandler.drawRight(super.image);
-    }
 }
