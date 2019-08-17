@@ -22,7 +22,6 @@ public class ImageFile{
     }
 
     public Image getImage() {
-        if(markForDeletion == true) return null;
         return image;
     }
 

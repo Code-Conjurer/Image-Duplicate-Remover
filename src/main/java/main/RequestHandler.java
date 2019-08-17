@@ -15,11 +15,17 @@ public class RequestHandler{
     private boolean isWaiting;
     private final ProgressHandler progressHandler;
     private final CanvasHandler canvasHandler;
+    private ProgressRunnable progressRunnable;
+    private DrawLeftRunnable drawLeftRunnable;
+    private DrawRightRunnable drawRightRunnable;
 
     public RequestHandler(Controller controller, ProgressHandler progressHandler,CanvasHandler canvasHandler){
         this.controller = controller;
         this.progressHandler = progressHandler;
         this.canvasHandler = canvasHandler;
+        progressRunnable = new ProgressRunnable();
+        drawLeftRunnable = new DrawLeftRunnable();
+        drawRightRunnable = new DrawRightRunnable();
         isWaiting = false;
     }
 
@@ -64,43 +70,36 @@ public class RequestHandler{
                 canvasHandler.clearRight();
             }
         });
+
     }
 
-    public void requestDrawLeft(final Image image){
-        Platform.runLater(new Runnable() {
-            public void run() {
-                canvasHandler.drawLeft(image);
-            }
-        });
+    public void requestDrawLeft(final Image image) {
+        drawLeftRunnable.setImage(image);
+        Platform.runLater(drawLeftRunnable);
     }
 
     public void requestDrawRight(final Image image){
-        Platform.runLater(new Runnable() {
-            public void run() {
-                canvasHandler.drawRight(image);
-            }
-        });
+        drawRightRunnable.setImage(image);
+        Platform.runLater(drawRightRunnable);
+
     }
 
     public void requestDrawLeftAndUpdateProgress(final Image image){
-        Platform.runLater(new Runnable() {
-            public void run() {
-                progressHandler.updateProgress();
-                canvasHandler.drawLeft(image);
-            }
-        });
+
+        drawLeftRunnable.setImage(image);
+        Platform.runLater(drawLeftRunnable);
+        Platform.runLater(progressRunnable);
     }
 
     public void requestDrawRightAndUpdateProgress(final Image image){
-        Platform.runLater(new Runnable() {
-            public void run() {
-                progressHandler.updateProgress();
-                canvasHandler.drawRight(image);
-            }
-        });
+
+        drawRightRunnable.setImage(image);
+        Platform.runLater(drawRightRunnable);
+        Platform.runLater(progressRunnable);
     }
 
     public void requestInitializeProgressActions(final int numberOfActions){
+
         Platform.runLater(new Runnable() {
             public void run() {
                 progressHandler.setActions(numberOfActions);
@@ -108,4 +107,37 @@ public class RequestHandler{
         });
     }
 
+    protected class ProgressRunnable implements Runnable{
+
+        @Override
+        public void run() {
+            progressHandler.updateProgress();
+        }
+    }
+
+    protected class DrawLeftRunnable implements Runnable{
+        Image image;
+
+        public void setImage(Image image){
+            this.image = image;
+        }
+
+        @Override
+        public void run() {
+            canvasHandler.drawLeft(image);
+        }
+    }
+
+    protected class DrawRightRunnable implements Runnable{
+        Image image;
+
+        public void setImage(Image image){
+            this.image = image;
+        }
+
+        @Override
+        public void run() {
+            canvasHandler.drawRight(image);
+        }
+    }
 }

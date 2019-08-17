@@ -1,6 +1,7 @@
 package main;
 
 import com.github.kilianB.hash.Hash;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 
 import java.io.File;
@@ -33,7 +34,6 @@ public class MainTask extends Task<Void> {
         for (File f : imageFilesDir) {
             images.add(new ImageFile(f));
         }
-
         //TODO introduce procedures to organize code
         String leftImageFileName, rightImageFileName;
         try {
@@ -50,23 +50,28 @@ public class MainTask extends Task<Void> {
                                 requestHandler.requestDrawRight(rightImageFile.getImage());
 
                                 if (ImageFileMatcher.isDuplicate(hash1, rightImageFile)) {
-                                    synchronized (this) {
+                                    requestHandler.requestDrawLeft(leftImageFile.getImage());
+                                    requestHandler.requestDrawRight(rightImageFile.getImage());
                                         //System.out.println(leftImageFile.getFile().getName() + " " + rightImageFile.getFile().getName());
-                                        requestHandler.requestDrawLeft(leftImageFile.getImage());
-                                        requestHandler.requestDrawRight(rightImageFile.getImage());
-                                        switch (requestHandler.requestDeletion(leftImageFile, rightImageFile)) {
-                                            case LEFT:
-                                                deletedFiles.add(leftImageFile.getFile().toURI().toString());
-                                                leftImageFile.delete();
-                                                break;
-                                            case RIGHT:
-                                                deletedFiles.add(rightImageFile.getFile().toURI().toString());
-                                                rightImageFile.delete();
-                                            default:
-                                                encounteredImageFiles.put(rightImageFileName, leftImageFileName); //right name will be searched on next pass of the outer loop
-                                                break;
-                                        }
+                                    switch (requestHandler.requestDeletion(leftImageFile, rightImageFile)) {
+                                        case LEFT:
+                                            requestHandler.requestClearLeftCanvas();
+                                            Thread.sleep(100);
+                                            deletedFiles.add(leftImageFile.getFile().toURI().toString());
+                                            leftImageFile.delete();
+
+                                            break;
+                                        case RIGHT:
+
+                                            requestHandler.requestClearRightCanvas();
+                                            Thread.sleep(100);
+                                            deletedFiles.add(rightImageFile.getFile().toURI().toString());
+                                            rightImageFile.delete();
+                                        default:
+                                            encounteredImageFiles.put(rightImageFileName, leftImageFileName); //right name will be searched on next pass of the outer loop
+                                            break;
                                     }
+
                                 }
                             }
                         }
@@ -76,6 +81,7 @@ public class MainTask extends Task<Void> {
         }catch (IOException e){
             System.out.println(e);
         }
+
         requestHandler.requestClearLeftCanvas();
         requestHandler.requestClearRightCanvas();
         return null;
