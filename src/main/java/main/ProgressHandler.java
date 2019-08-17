@@ -6,10 +6,11 @@ public class ProgressHandler {
 
     private double actions;
     private ProgressBar progressBar;
-    private double currentProgress;
+    private double progress;
 
     public ProgressHandler(ProgressBar progressBar){
         actions = -1;
+        progress = 0;
         this.progressBar = progressBar;
     }
 
@@ -22,13 +23,14 @@ public class ProgressHandler {
     public void resetProgress(){
         if(actions == -1) return;
         progressBar.setProgress(0);
-        currentProgress = 0;
+        progress = 0;
     }
 
     public void updateProgress(){
         if(actions == -1) return;
-        double newProgress = currentProgress + (100/actions);
-        progressBar.setProgress(newProgress);
+        progress++;
+        //System.out.println(progressBar.getProgress() + " " + progress);
+        progressBar.setProgress(progress/actions);
     }
 
 

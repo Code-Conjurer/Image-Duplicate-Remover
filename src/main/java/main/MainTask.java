@@ -1,13 +1,14 @@
 package main;
 
 import com.github.kilianB.hash.Hash;
-import javafx.application.Platform;
 import javafx.concurrent.Task;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class MainTask extends Task<Void> {
 
@@ -16,8 +17,6 @@ public class MainTask extends Task<Void> {
 
     public MainTask(File selectedDirectory, RequestHandler requestHandler){
         this.selectedDirectory = selectedDirectory;
-        //this.progressHandler = progressHandler;
-        //this.canvasHandler = canvasHandler;
         this.requestHandler = requestHandler;
     }
 
@@ -25,33 +24,51 @@ public class MainTask extends Task<Void> {
 
         File[] imageFilesDir = selectedDirectory.listFiles(new ImageFileFiler());
 
-        requestHandler.requestInitializeProgressActions(imageFilesDir.length * imageFilesDir.length);
-        System.out.println(imageFilesDir.length * imageFilesDir.length);
+        requestHandler.requestInitializeProgressActions(imageFilesDir.length);
+        //System.out.println(imageFilesDir.length * imageFilesDir.length);
         ArrayList<ImageFile> images = new ArrayList<ImageFile>(0);
+        ArrayList<String> deletedFiles = new ArrayList<String>(0);
+        HashMap<String, String> encounteredImageFiles = new HashMap<String, String>(0);
 
         for (File f : imageFilesDir) {
             images.add(new ImageFile(f));
         }
 
+        //TODO introduce procedures to organize code
+        String leftImageFileName, rightImageFileName;
         try {
             for (final ImageFile leftImageFile : images) {
-                Hash hash1 = ImageFileMatcher.getHasher().hash(leftImageFile.getFile());
-                ////////////////////////////////////////////////////////////
-                requestHandler.requestDrawLeftAndUpdateProgress(leftImageFile.getImage());
-                /////////////////////////////////////////////////////////////
+                if(!leftImageFile.isMarkedForDeletion()) {
+                    Hash hash1 = ImageFileMatcher.getHasher().hash(leftImageFile.getFile());
+                    requestHandler.requestDrawLeftAndUpdateProgress(leftImageFile.getImage());
+                    leftImageFileName = leftImageFile.getFile().getName();
 
-                for (final ImageFile rightImageFile : images) {
-                    requestHandler.requestDrawRightAndUpdateProgress(rightImageFile.getImage());
+                    for (final ImageFile rightImageFile : images) {
+                        if (!rightImageFile.isMarkedForDeletion()) {
+                            rightImageFileName = rightImageFile.getFile().getName();
+                            if (!rightImageFileName.equals(leftImageFileName) && encounteredImageFiles.get(leftImageFileName) == null) {
+                                requestHandler.requestDrawRight(rightImageFile.getImage());
 
-                    if (!(leftImageFile.isMarkedForDeletion() || rightImageFile.isMarkedForDeletion()) && leftImageFile.getFile() != rightImageFile.getFile()) {
-                        if (ImageFileMatcher.isDuplicate(hash1, rightImageFile)) {
-
-                            System.out.println(leftImageFile.getFile().getName() + " " + rightImageFile.getFile().getName());
-                            requestHandler.requestDrawLeft(leftImageFile.getImage());
-                            requestHandler.requestDrawRight(rightImageFile.getImage());
-                            requestHandler.requestDeletion(leftImageFile, rightImageFile);
-
-
+                                if (ImageFileMatcher.isDuplicate(hash1, rightImageFile)) {
+                                    synchronized (this) {
+                                        //System.out.println(leftImageFile.getFile().getName() + " " + rightImageFile.getFile().getName());
+                                        requestHandler.requestDrawLeft(leftImageFile.getImage());
+                                        requestHandler.requestDrawRight(rightImageFile.getImage());
+                                        switch (requestHandler.requestDeletion(leftImageFile, rightImageFile)) {
+                                            case LEFT:
+                                                deletedFiles.add(leftImageFile.getFile().toURI().toString());
+                                                leftImageFile.delete();
+                                                break;
+                                            case RIGHT:
+                                                deletedFiles.add(rightImageFile.getFile().toURI().toString());
+                                                rightImageFile.delete();
+                                            default:
+                                                encounteredImageFiles.put(rightImageFileName, leftImageFileName); //right name will be searched on next pass of the outer loop
+                                                break;
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -59,6 +76,8 @@ public class MainTask extends Task<Void> {
         }catch (IOException e){
             System.out.println(e);
         }
+        requestHandler.requestClearLeftCanvas();
+        requestHandler.requestClearRightCanvas();
         return null;
     }
 }

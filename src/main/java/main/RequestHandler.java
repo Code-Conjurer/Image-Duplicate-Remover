@@ -11,7 +11,8 @@ enum DeleteResponse{
 public class RequestHandler{
 
     private Controller controller;
-    private DeleteResponse deleteResponse;
+    private volatile DeleteResponse deleteResponse;
+    private boolean isWaiting;
     private final ProgressHandler progressHandler;
     private final CanvasHandler canvasHandler;
 
@@ -19,18 +20,50 @@ public class RequestHandler{
         this.controller = controller;
         this.progressHandler = progressHandler;
         this.canvasHandler = canvasHandler;
+        isWaiting = false;
     }
 
-    public boolean requestDeletion(ImageFile imageFileLeft, ImageFile imageFileRight) throws InterruptedException{
+    public DeleteResponse requestDeletion(ImageFile imageFileLeft, ImageFile imageFileRight) throws InterruptedException, RequestFailedException{
 
         synchronized (this){
             deleteResponse = null;
+            isWaiting = true;
             controller.requestDeletion(imageFileLeft, imageFileRight);
             wait();
-            //TODO
+            isWaiting = false;
+            //GUI has responded
+            if(deleteResponse == null) throw new RequestFailedException();
+            return deleteResponse;
         }
+    }
 
-        return true;
+    public void wakeUp(){
+        synchronized (this){
+            notify();
+        }
+    }
+
+    public void setDeleteResponse(DeleteResponse deleteResponse){
+        this.deleteResponse = deleteResponse;
+    }
+
+    public boolean isWaiting(){
+        return isWaiting;
+    }
+
+    public void requestClearLeftCanvas() {
+        Platform.runLater(new Runnable() {
+            public void run() {
+                canvasHandler.clearLeft();
+            }
+        });
+    }
+    public void requestClearRightCanvas() {
+        Platform.runLater(new Runnable() {
+            public void run() {
+                canvasHandler.clearRight();
+            }
+        });
     }
 
     public void requestDrawLeft(final Image image){

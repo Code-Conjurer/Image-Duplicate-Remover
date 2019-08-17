@@ -14,7 +14,7 @@
 
 <BorderPane minHeight="183.0" minWidth="188.0" prefHeight="425.0" prefWidth="634.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.Controller">
    <bottom>
-      <SplitPane dividerPositions="0.7727272727272727" prefHeight="33.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <SplitPane dividerPositions="0.9265175718849841" prefHeight="33.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
@@ -39,7 +39,7 @@
               <items>
                 <AnchorPane fx:id="leftCanvasParent" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                      <children>
-                        <Canvas fx:id="leftCanvas" height="296.0" layoutX="9.0" layoutY="10.0" width="255.0" AnchorPane.bottomAnchor="16.0" AnchorPane.leftAnchor="4.0" AnchorPane.topAnchor="5.0" />
+                        <Canvas fx:id="leftCanvas" height="296.0" layoutX="9.0" layoutY="10.0" onMouseClicked="#leftCanvasClicked" width="255.0" AnchorPane.bottomAnchor="16.0" AnchorPane.leftAnchor="4.0" AnchorPane.topAnchor="5.0" />
                      </children>
                      <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -47,7 +47,7 @@
                   </AnchorPane>
                 <AnchorPane fx:id="rightCanvasParent" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="222.0">
                      <children>
-                        <Canvas fx:id="rightCanvas" height="293.0" layoutX="-15.0" layoutY="9.0" width="248.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="4.0" />
+                        <Canvas fx:id="rightCanvas" height="293.0" layoutX="-15.0" layoutY="9.0" onMouseClicked="#rightCanvasClicked" width="248.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="4.0" />
                      </children>
                      <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -60,7 +60,7 @@
             <Label fx:id="directoryLabel" BorderPane.alignment="CENTER" />
          </top>
          <bottom>
-            <Button fx:id="skipButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="243.0" text="Skip" textAlignment="CENTER" BorderPane.alignment="CENTER">
+            <Button fx:id="skipButton" mnemonicParsing="false" onAction="#skipButtonClicked" prefHeight="25.0" prefWidth="243.0" text="Skip" textAlignment="CENTER" BorderPane.alignment="CENTER">
                <BorderPane.margin>
                   <Insets />
                </BorderPane.margin>
@@ -74,7 +74,7 @@
           <Menu mnemonicParsing="false" text="Open">
             <items>
               <MenuItem fx:id="openMenuItem" mnemonicParsing="false" text="Directory" />
-                  <MenuItem fx:id="settingsMenuItem" mnemonicParsing="false" text="Settings" />
+                  <MenuItem fx:id="settingsMenuItem" disable="true" mnemonicParsing="false" text="Settings" />
             </items>
           </Menu>
         </menus>

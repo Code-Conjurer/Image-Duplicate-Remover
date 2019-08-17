@@ -13,6 +13,17 @@ public class CanvasHandler {
     public CanvasHandler(Canvas leftCanvas, Canvas rightCanvas){
         this.leftCanvas = leftCanvas;
         this.rightCanvas = rightCanvas;
+        leftToolTip = new Tooltip();
+        rightToolTip = new Tooltip();
+
+    }
+
+    public void clearLeft(){
+        clear(leftCanvas);
+    }
+
+    public void clearRight(){
+        clear(rightCanvas);
     }
 
     public void drawLeft(Image image){
@@ -27,7 +38,21 @@ public class CanvasHandler {
         setToolTip(leftToolTip, fileName, width, height);
     }
 
+    public void setLeftToolTip(ImageFile imageFile){
+        String fileName = imageFile.getFile().toURI().toString();
+        double width = imageFile.getImage().getWidth();
+        double height = imageFile.getImage().getHeight();
+        setToolTip(leftToolTip, fileName, width, height);
+    }
+
     public void setRightToolTip(String fileName, double width, double height){
+        setToolTip(rightToolTip, fileName, width, height);
+    }
+
+    public void setRightToolTip(ImageFile imageFile){
+        String fileName = imageFile.getFile().toURI().toString();
+        double width = imageFile.getImage().getWidth();
+        double height = imageFile.getImage().getHeight();
         setToolTip(rightToolTip, fileName, width, height);
     }
 
@@ -48,7 +73,7 @@ public class CanvasHandler {
     }
 
     private void setToolTip(Tooltip toolTip, String fileName, double width, double height){
-        toolTip.setText("DELETE: " + fileName + "    " + width + "x" + height);
+        toolTip.setText("DELETE:    " + fileName + "    " + (int)width + " x " + (int)height);
     }
 
     private void hideToolTip(Canvas canvas, Tooltip toolTip){
@@ -57,6 +82,11 @@ public class CanvasHandler {
 
     private void showToolTip(Canvas canvas, Tooltip toolTip){
         Tooltip.install(canvas, toolTip);
+    }
+
+    private void clear(Canvas canvas){
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
     private void draw(Image image, Canvas canvas){

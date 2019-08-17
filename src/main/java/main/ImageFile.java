@@ -1,7 +1,10 @@
 package main;
 
 import javafx.scene.image.Image;
+
+import com.sun.jna.platform.FileUtils;
 import java.io.File;
+import java.io.IOException;
 
 public class ImageFile{
 
@@ -19,6 +22,7 @@ public class ImageFile{
     }
 
     public Image getImage() {
+        if(markForDeletion == true) return null;
         return image;
     }
 
@@ -26,7 +30,22 @@ public class ImageFile{
         return markForDeletion ;
     }
 
-    public void markForDeletion(){
+    public void delete(){
+        FileUtils fileUtils = FileUtils.getInstance();
+        if (fileUtils.hasTrash()) {
+            try {
+                fileUtils.moveToTrash(new File[]{file});
+            } catch (IOException e) {
+                System.out.println("Error while moving the file to trash " + e.getMessage());
+            }
+        } else {
+            file.delete();
+            System.out.println("No Trash available");
+        }
+        markForDeletion();
+    }
+
+    private void markForDeletion(){
         markForDeletion = true;
     }
 }
