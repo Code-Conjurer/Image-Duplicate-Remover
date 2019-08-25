@@ -36,7 +36,7 @@ public class RequestHandler{
         synchronized (this){
             deleteResponse = null;
             isWaiting = true;
-            controller.requestDeletion(imageFileLeft, imageFileRight);
+            controller.signalDeletion(imageFileLeft, imageFileRight);
             wait();
             isWaiting = false;
             //GUI has responded
@@ -45,6 +45,7 @@ public class RequestHandler{
         }
     }
 
+    //This will be run from GUI thread
     public void wakeUp(){
         synchronized (this){
             notify();
@@ -73,6 +74,14 @@ public class RequestHandler{
             }
         });
 
+    }
+
+    public void DrawLeftImmediately(Image image){
+        canvasHandler.drawLeft(image);
+    }
+
+    public void DrawRightImmediately(Image image){
+        canvasHandler.drawRight(image);
     }
 
     public void DrawLeft(final Image image) {

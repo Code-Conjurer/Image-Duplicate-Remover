@@ -36,14 +36,6 @@ public class CanvasHandler {
         draw(image, rightCanvas);
     }
 
-    public void drawLeft(File file){
-        drawFromFile(file, leftCanvas);
-    }
-
-    public void drawRight(File file){
-        drawFromFile(file, rightCanvas);
-    }
-
     public void setLeftToolTip(String fileName, double width, double height){
         setToolTip(leftToolTip, fileName, width, height);
     }
@@ -97,13 +89,6 @@ public class CanvasHandler {
     private void clear(Canvas canvas){
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-    }
-
-    private void drawFromFile(File file, Canvas canvas){
-
-        Image image = new Image(file.toURI().toString());
-        draw(image, canvas);
-
     }
 
     private void draw(Image image, Canvas canvas){

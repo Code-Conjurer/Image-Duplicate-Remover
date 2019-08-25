@@ -71,6 +71,7 @@ public class Controller{
 
             public void handle(ActionEvent event) {
                 selectedDirectory = directoryChooser.showDialog(theStage);
+                
                 if(selectedDirectory != null)
                     directoryLabel.setText(selectedDirectory.toURI().toString());
             }
@@ -87,6 +88,7 @@ public class Controller{
             taskThread.setDaemon(true);
             taskThread.start();
         }
+
         goButton.setDisable(false);
     }
 
@@ -118,7 +120,7 @@ public class Controller{
     }
 
     //This will run in MainTask thread
-    public void requestDeletion(ImageFile imageFileLeft, ImageFile imageFileRight) {
+    public void signalDeletion(ImageFile imageFileLeft, ImageFile imageFileRight) {
         synchronized (this) {
             skipButton.setDisable(false);
             canvasHandler.setLeftToolTip(imageFileLeft);

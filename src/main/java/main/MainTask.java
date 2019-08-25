@@ -1,7 +1,5 @@
 package main;
 
-import com.github.kilianB.hash.Hash;
-import javafx.application.Platform;
 import javafx.concurrent.Task;
 
 import java.io.File;
@@ -9,86 +7,117 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainTask extends Task<Void> {
 
     private final File selectedDirectory;
     private final RequestHandler requestHandler;
 
-    public MainTask(File selectedDirectory, RequestHandler requestHandler){
+    public MainTask(File selectedDirectory, RequestHandler requestHandler) {
         this.selectedDirectory = selectedDirectory;
         this.requestHandler = requestHandler;
     }
 
-    protected Void call() throws Exception {
+    private File[] createFileArray() {
+        return selectedDirectory.listFiles(new ImageFileFiler());
+    }
 
-        File[] imageFilesDir = selectedDirectory.listFiles(new ImageFileFiler());
+    private ArrayList<Integer> findForMatches(ImageFile imageFile, List<ImageFile> list, Map<String, String> encounteredImageFiles) {
+        ArrayList<Integer> indexList = new ArrayList<>(0);
+        ImageFile toCompare;
+        boolean sameFile, hasEncountered, comparedIsDeleted;
+        for (int i = 0; i < list.size(); i++) {
+            toCompare = list.get(i);
 
-        //System.out.println(imageFilesDir.length * imageFilesDir.length);
+            sameFile = imageFile.getName().equals(toCompare.getName());
+            hasEncountered = encounteredImageFiles.get(toCompare.getName()) != null;
+            comparedIsDeleted = toCompare.isMarkedForDeletion();
+            if ( !(sameFile || hasEncountered || comparedIsDeleted)) { //check that the compared image is not deleted, or has encountered original image
+                if (isMatch(imageFile, toCompare))
+                    indexList.add(i);
+            }
+        }
+
+        return indexList;
+    }
+
+    private boolean isMatch(ImageFile image1, ImageFile image2) {
+        return ImageFileMatcher.isDuplicate(image1.getImageHash(), image2.getImageHash());
+    }
+
+    private void handleDeletion(ImageFile leftImageFile, ImageFile rightImageFile, List<String> deletedFiles, Map<String, String> encounteredImageFiles) throws InterruptedException, RequestFailedException{
+        switch (requestHandler.requestDeletion(leftImageFile, rightImageFile)) {
+            case LEFT:
+                requestHandler.ClearLeftCanvas();
+                Thread.sleep(100);
+                deletedFiles.add(leftImageFile.getFile().toURI().toString());
+                leftImageFile.delete();
+                break;
+            case RIGHT:
+
+                requestHandler.ClearRightCanvas();
+                Thread.sleep(100);
+                deletedFiles.add(rightImageFile.getFile().toURI().toString());
+                rightImageFile.delete();
+                break;
+            default:
+                requestHandler.ClearLeftCanvas();
+                requestHandler.ClearRightCanvas();
+                Thread.sleep(100);
+                encounteredImageFiles.put(leftImageFile.getName(), rightImageFile.getName()); //left has encountered right
+                break;
+        }
+    }
+
+    protected Void call() throws IOException {
+
+        File[] imageFilesDir = createFileArray();
+
         ArrayList<ImageFile> images = new ArrayList<ImageFile>(0);
         ArrayList<String> deletedFiles = new ArrayList<String>(0);
         HashMap<String, String> encounteredImageFiles = new HashMap<String, String>(0);
 
         requestHandler.InitializeProgressActions(imageFilesDir.length);
+
         for (File f : imageFilesDir) {
             images.add(new ImageFile(f));
             requestHandler.ProgressUpdate();
         }
         requestHandler.ProgressReset();
 
-        double probabilityImageWillShow = 1000 / imageFilesDir.length;
-        double probabilityAdjust = 0.1;
         imageFilesDir = null;
 
-                //TODO introduce procedures to organize code
-                String leftImageFileName, rightImageFileName;
-        try {
-            for (final ImageFile leftImageFile : images) {
-                if(!leftImageFile.isMarkedForDeletion()) {
-                    Hash hash1 = ImageFileMatcher.getHasher().hash(leftImageFile.getFile());
-                    requestHandler.DrawLeftAndUpdateProgress(leftImageFile.getImage());
-                    leftImageFileName = leftImageFile.getFile().getName();
-                    Thread.sleep(100);
+        ArrayList<Integer> matchingImageIndexes;
+        ImageFile rightImageFile;
 
-                    for (final ImageFile rightImageFile : images) {
-                        if (!rightImageFile.isMarkedForDeletion()) {
-                            rightImageFileName = rightImageFile.getFile().getName();
-                            if (!rightImageFileName.equals(leftImageFileName) && encounteredImageFiles.get(leftImageFileName) == null){
+        for (final ImageFile leftImageFile : images) {
+            requestHandler.ProgressUpdate();
+            if (!leftImageFile.isMarkedForDeletion()) {
+                matchingImageIndexes = findForMatches(leftImageFile, images, encounteredImageFiles);
 
-                                if(Math.random() < probabilityImageWillShow + probabilityAdjust)
-                                    requestHandler.DrawRight(rightImageFile.getImage());
+                for (Integer index : matchingImageIndexes) {
+                    if(leftImageFile.isMarkedForDeletion()) break;
 
-                                if (ImageFileMatcher.isDuplicate(hash1, rightImageFile)) {
-                                    requestHandler.DrawLeft(leftImageFile.getImage());
-                                    requestHandler.DrawRight(rightImageFile.getImage());
-                                        //System.out.println(leftImageFile.getFile().getName() + " " + rightImageFile.getFile().getName());
-                                    switch (requestHandler.requestDeletion(leftImageFile, rightImageFile)) {
-                                        case LEFT:
-                                            requestHandler.ClearLeftCanvas();
-                                            Thread.sleep(100);
-                                            deletedFiles.add(leftImageFile.getFile().toURI().toString());
-                                            leftImageFile.delete();
+                    rightImageFile = images.get(index);
 
-                                            break;
-                                        case RIGHT:
+                    requestHandler.DrawLeft(leftImageFile.getImage());
+                    requestHandler.DrawRight(rightImageFile.getImage());
 
-                                            requestHandler.ClearRightCanvas();
-                                            Thread.sleep(100);
-                                            deletedFiles.add(rightImageFile.getFile().toURI().toString());
-                                            rightImageFile.delete();
-                                        default:
-                                            encounteredImageFiles.put(rightImageFileName, leftImageFileName); //right name will be searched on next pass of the outer loop
-                                            break;
-                                    }
+                    try {
 
-                                }
-                            }
-                        }
+                        handleDeletion(leftImageFile, rightImageFile, deletedFiles, encounteredImageFiles);
+
+                    } catch (InterruptedException e) {
+                        System.out.println(e);
+                        System.exit(1);
+                    } catch (RequestFailedException e) {
+                        System.out.println(e);
+                        System.exit(1);
                     }
                 }
             }
-        }catch (IOException e){
-            System.out.println(e);
         }
 
         requestHandler.ClearLeftCanvas();

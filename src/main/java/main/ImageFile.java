@@ -1,5 +1,6 @@
 package main;
 
+import com.github.kilianB.hash.Hash;
 import javafx.scene.image.Image;
 
 import com.sun.jna.platform.FileUtils;
@@ -9,20 +10,28 @@ import java.io.IOException;
 public class ImageFile{
 
     private File file;
-    private Image image;
+    private Hash imageHash;
     private boolean markForDeletion = false;
 
-    public ImageFile (File file){
+    public ImageFile (File file) throws IOException{
         this.file = file;
-        image = new Image(file.toURI().toString(), 64, 64, false, false);
+        imageHash = ImageFileMatcher.getHasher().hash(file);
+    }
+
+    public Hash getImageHash(){
+        return imageHash;
     }
 
     public File getFile() {
         return file;
     }
 
+    public String getName(){
+        return file.getName();
+    }
+
     public Image getImage() {
-        return image;
+        return new Image(file.toURI().toString());
     }
 
     public boolean isMarkedForDeletion(){
