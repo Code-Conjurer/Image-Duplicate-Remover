@@ -18,6 +18,7 @@ public class RequestHandler{
     private ProgressRunnable progressRunnable;
     private DrawLeftRunnable drawLeftRunnable;
     private DrawRightRunnable drawRightRunnable;
+    private ProgressResetRunnable progressResetRunnable;
 
     public RequestHandler(Controller controller, ProgressHandler progressHandler,CanvasHandler canvasHandler){
         this.controller = controller;
@@ -26,6 +27,7 @@ public class RequestHandler{
         progressRunnable = new ProgressRunnable();
         drawLeftRunnable = new DrawLeftRunnable();
         drawRightRunnable = new DrawRightRunnable();
+        progressResetRunnable = new ProgressResetRunnable();
         isWaiting = false;
     }
 
@@ -57,14 +59,14 @@ public class RequestHandler{
         return isWaiting;
     }
 
-    public void requestClearLeftCanvas() {
+    public void ClearLeftCanvas() {
         Platform.runLater(new Runnable() {
             public void run() {
                 canvasHandler.clearLeft();
             }
         });
     }
-    public void requestClearRightCanvas() {
+    public void ClearRightCanvas() {
         Platform.runLater(new Runnable() {
             public void run() {
                 canvasHandler.clearRight();
@@ -73,32 +75,40 @@ public class RequestHandler{
 
     }
 
-    public void requestDrawLeft(final Image image) {
+    public void DrawLeft(final Image image) {
         drawLeftRunnable.setImage(image);
         Platform.runLater(drawLeftRunnable);
     }
 
-    public void requestDrawRight(final Image image){
+    public void DrawRight(final Image image){
         drawRightRunnable.setImage(image);
         Platform.runLater(drawRightRunnable);
 
     }
 
-    public void requestDrawLeftAndUpdateProgress(final Image image){
+    public void DrawLeftAndUpdateProgress(final Image image){
 
         drawLeftRunnable.setImage(image);
         Platform.runLater(drawLeftRunnable);
         Platform.runLater(progressRunnable);
     }
 
-    public void requestDrawRightAndUpdateProgress(final Image image){
+    public void DrawRightAndUpdateProgress(final Image image){
 
         drawRightRunnable.setImage(image);
         Platform.runLater(drawRightRunnable);
         Platform.runLater(progressRunnable);
     }
 
-    public void requestInitializeProgressActions(final int numberOfActions){
+    public void ProgressUpdate(){
+        Platform.runLater(progressRunnable);
+    }
+
+    public void ProgressReset(){
+        Platform.runLater(progressResetRunnable);
+    }
+
+    public void InitializeProgressActions(final int numberOfActions){
 
         Platform.runLater(new Runnable() {
             public void run() {
@@ -107,11 +117,22 @@ public class RequestHandler{
         });
     }
 
+
+
+
     protected class ProgressRunnable implements Runnable{
 
         @Override
         public void run() {
             progressHandler.updateProgress();
+        }
+    }
+
+    protected class ProgressResetRunnable implements Runnable{
+
+        @Override
+        public void run() {
+            progressHandler.resetProgress();
         }
     }
 

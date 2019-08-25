@@ -14,7 +14,7 @@ public class ImageFile{
 
     public ImageFile (File file){
         this.file = file;
-        image = new Image(file.toURI().toString());
+        image = new Image(file.toURI().toString(), 64, 64, false, false);
     }
 
     public File getFile() {

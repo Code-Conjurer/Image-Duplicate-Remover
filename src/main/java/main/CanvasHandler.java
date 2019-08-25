@@ -5,6 +5,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 
+import java.io.File;
+
+//TODO: add drawHighRes method
 public class CanvasHandler {
 
     private Canvas leftCanvas, rightCanvas;
@@ -27,11 +30,18 @@ public class CanvasHandler {
     }
 
     public void drawLeft(Image image){
-
         draw(image, leftCanvas);
     }
     public void drawRight(Image image){
         draw(image, rightCanvas);
+    }
+
+    public void drawLeft(File file){
+        drawFromFile(file, leftCanvas);
+    }
+
+    public void drawRight(File file){
+        drawFromFile(file, rightCanvas);
     }
 
     public void setLeftToolTip(String fileName, double width, double height){
@@ -87,6 +97,13 @@ public class CanvasHandler {
     private void clear(Canvas canvas){
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+    }
+
+    private void drawFromFile(File file, Canvas canvas){
+
+        Image image = new Image(file.toURI().toString());
+        draw(image, canvas);
+
     }
 
     private void draw(Image image, Canvas canvas){

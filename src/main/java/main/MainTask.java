@@ -9,7 +9,6 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class MainTask extends Task<Void> {
 
@@ -25,37 +24,47 @@ public class MainTask extends Task<Void> {
 
         File[] imageFilesDir = selectedDirectory.listFiles(new ImageFileFiler());
 
-        requestHandler.requestInitializeProgressActions(imageFilesDir.length);
         //System.out.println(imageFilesDir.length * imageFilesDir.length);
         ArrayList<ImageFile> images = new ArrayList<ImageFile>(0);
         ArrayList<String> deletedFiles = new ArrayList<String>(0);
         HashMap<String, String> encounteredImageFiles = new HashMap<String, String>(0);
 
+        requestHandler.InitializeProgressActions(imageFilesDir.length);
         for (File f : imageFilesDir) {
             images.add(new ImageFile(f));
+            requestHandler.ProgressUpdate();
         }
-        //TODO introduce procedures to organize code
-        String leftImageFileName, rightImageFileName;
+        requestHandler.ProgressReset();
+
+        double probabilityImageWillShow = 1000 / imageFilesDir.length;
+        double probabilityAdjust = 0.1;
+        imageFilesDir = null;
+
+                //TODO introduce procedures to organize code
+                String leftImageFileName, rightImageFileName;
         try {
             for (final ImageFile leftImageFile : images) {
                 if(!leftImageFile.isMarkedForDeletion()) {
                     Hash hash1 = ImageFileMatcher.getHasher().hash(leftImageFile.getFile());
-                    requestHandler.requestDrawLeftAndUpdateProgress(leftImageFile.getImage());
+                    requestHandler.DrawLeftAndUpdateProgress(leftImageFile.getImage());
                     leftImageFileName = leftImageFile.getFile().getName();
+                    Thread.sleep(100);
 
                     for (final ImageFile rightImageFile : images) {
                         if (!rightImageFile.isMarkedForDeletion()) {
                             rightImageFileName = rightImageFile.getFile().getName();
-                            if (!rightImageFileName.equals(leftImageFileName) && encounteredImageFiles.get(leftImageFileName) == null) {
-                                requestHandler.requestDrawRight(rightImageFile.getImage());
+                            if (!rightImageFileName.equals(leftImageFileName) && encounteredImageFiles.get(leftImageFileName) == null){
+
+                                if(Math.random() < probabilityImageWillShow + probabilityAdjust)
+                                    requestHandler.DrawRight(rightImageFile.getImage());
 
                                 if (ImageFileMatcher.isDuplicate(hash1, rightImageFile)) {
-                                    requestHandler.requestDrawLeft(leftImageFile.getImage());
-                                    requestHandler.requestDrawRight(rightImageFile.getImage());
+                                    requestHandler.DrawLeft(leftImageFile.getImage());
+                                    requestHandler.DrawRight(rightImageFile.getImage());
                                         //System.out.println(leftImageFile.getFile().getName() + " " + rightImageFile.getFile().getName());
                                     switch (requestHandler.requestDeletion(leftImageFile, rightImageFile)) {
                                         case LEFT:
-                                            requestHandler.requestClearLeftCanvas();
+                                            requestHandler.ClearLeftCanvas();
                                             Thread.sleep(100);
                                             deletedFiles.add(leftImageFile.getFile().toURI().toString());
                                             leftImageFile.delete();
@@ -63,7 +72,7 @@ public class MainTask extends Task<Void> {
                                             break;
                                         case RIGHT:
 
-                                            requestHandler.requestClearRightCanvas();
+                                            requestHandler.ClearRightCanvas();
                                             Thread.sleep(100);
                                             deletedFiles.add(rightImageFile.getFile().toURI().toString());
                                             rightImageFile.delete();
@@ -82,8 +91,8 @@ public class MainTask extends Task<Void> {
             System.out.println(e);
         }
 
-        requestHandler.requestClearLeftCanvas();
-        requestHandler.requestClearRightCanvas();
+        requestHandler.ClearLeftCanvas();
+        requestHandler.ClearRightCanvas();
         return null;
     }
 }
