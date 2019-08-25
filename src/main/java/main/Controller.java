@@ -47,6 +47,7 @@ public class Controller{
     private CanvasHandler canvasHandler;
     private RequestHandler requestHandler;
     private Thread taskThread;
+    private String directoryName, leftImageName, rightImageName;
 
     //Requires theStage to have been set
     public void initialize(){
@@ -58,9 +59,12 @@ public class Controller{
 
         progressHandler = new ProgressHandler(progressBar);
         canvasHandler = new CanvasHandler(leftCanvas, rightCanvas);
-        requestHandler = new RequestHandler(this, progressHandler, canvasHandler);
+        requestHandler = new RequestHandler(this, progressHandler, canvasHandler, openMenuItem, goButton);
         taskThread = new Thread();  //dummy thread
 
+        directoryName = null;
+        leftImageName = null;
+        rightImageName = null;
         skipButton.setDisable(true);
     }
 
@@ -71,25 +75,48 @@ public class Controller{
 
             public void handle(ActionEvent event) {
                 selectedDirectory = directoryChooser.showDialog(theStage);
-                
-                if(selectedDirectory != null)
-                    directoryLabel.setText(selectedDirectory.toURI().toString());
+                if(selectedDirectory != null) {
+                    directoryName = selectedDirectory.getName();
+                    directoryLabel.setText(directoryName);
+                }
             }
         });
     }
 
     @FXML
     public void goButtonClicked(){
-        goButton.setDisable(true);
         if (selectedDirectory != null && !taskThread.isAlive()) {
+            goButton.setDisable(true);
+            openMenuItem.setDisable(true);
+
             progressHandler.resetProgress();
             Task<Void> mainTask = new MainTask(selectedDirectory, requestHandler);
             taskThread = new Thread(mainTask);
             taskThread.setDaemon(true);
             taskThread.start();
         }
+    }
 
-        goButton.setDisable(false);
+    @FXML
+    public void leftCanvasEntered(){
+        if(leftImageName != null)
+            directoryLabel.setText(leftImageName);
+    }
+
+    @FXML
+    public void leftCanvasExited(){
+        directoryLabel.setText(directoryName);
+    }
+
+    @FXML
+    public void rightCanvasEntered(){
+        if(rightImageName != null)
+            directoryLabel.setText(rightImageName);
+    }
+
+    @FXML
+    public void rightCanvasExited(){
+        directoryLabel.setText(directoryName);
     }
 
     @FXML
@@ -112,8 +139,8 @@ public class Controller{
             if (requestHandler.isWaiting()) {
                 requestHandler.setDeleteResponse(deleteResponse);
                 skipButton.setDisable(true);
-                canvasHandler.hideLeftToolTip();
-                canvasHandler.hideRightToolTip();
+                leftImageName = null;
+                rightImageName = null;
                 requestHandler.wakeUp();
             }
         }
@@ -123,10 +150,8 @@ public class Controller{
     public void signalDeletion(ImageFile imageFileLeft, ImageFile imageFileRight) {
         synchronized (this) {
             skipButton.setDisable(false);
-            canvasHandler.setLeftToolTip(imageFileLeft);
-            canvasHandler.setRightToolTip(imageFileRight);
-            canvasHandler.showLeftToolTip();
-            canvasHandler.showRightToolTip();
+            leftImageName = imageFileLeft.getName();
+            rightImageName = imageFileRight.getName();
         }
     }
 }

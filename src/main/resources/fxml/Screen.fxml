@@ -39,7 +39,7 @@
               <items>
                 <AnchorPane fx:id="leftCanvasParent" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                      <children>
-                        <Canvas fx:id="leftCanvas" height="296.0" layoutX="9.0" layoutY="10.0" onMouseClicked="#leftCanvasClicked" width="255.0" AnchorPane.bottomAnchor="16.0" AnchorPane.leftAnchor="4.0" AnchorPane.topAnchor="5.0" />
+                        <Canvas fx:id="leftCanvas" height="296.0" layoutX="9.0" layoutY="10.0" onMouseClicked="#leftCanvasClicked" onMouseEntered="#leftCanvasEntered" onMouseExited="#leftCanvasExited" width="255.0" AnchorPane.bottomAnchor="16.0" AnchorPane.leftAnchor="4.0" AnchorPane.topAnchor="5.0" />
                      </children>
                      <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -47,7 +47,7 @@
                   </AnchorPane>
                 <AnchorPane fx:id="rightCanvasParent" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="222.0">
                      <children>
-                        <Canvas fx:id="rightCanvas" height="293.0" layoutX="-15.0" layoutY="9.0" onMouseClicked="#rightCanvasClicked" width="248.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="4.0" />
+                        <Canvas fx:id="rightCanvas" height="293.0" layoutX="-15.0" layoutY="9.0" onMouseClicked="#rightCanvasClicked" onMouseEntered="#rightCanvasEntered" onMouseExited="#rightCanvasExited" width="248.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="4.0" />
                      </children>
                      <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

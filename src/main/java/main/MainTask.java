@@ -29,6 +29,7 @@ public class MainTask extends Task<Void> {
         ImageFile toCompare;
         boolean sameFile, hasEncountered, comparedIsDeleted;
         for (int i = 0; i < list.size(); i++) {
+            requestHandler.ProgressUpdate();
             toCompare = list.get(i);
 
             sameFile = imageFile.getName().equals(toCompare.getName());
@@ -86,6 +87,7 @@ public class MainTask extends Task<Void> {
             requestHandler.ProgressUpdate();
         }
         requestHandler.ProgressReset();
+        requestHandler.InitializeProgressActions(imageFilesDir.length * imageFilesDir.length );
 
         imageFilesDir = null;
 
@@ -93,7 +95,6 @@ public class MainTask extends Task<Void> {
         ImageFile rightImageFile;
 
         for (final ImageFile leftImageFile : images) {
-            requestHandler.ProgressUpdate();
             if (!leftImageFile.isMarkedForDeletion()) {
                 matchingImageIndexes = findForMatches(leftImageFile, images, encounteredImageFiles);
 
@@ -122,6 +123,7 @@ public class MainTask extends Task<Void> {
 
         requestHandler.ClearLeftCanvas();
         requestHandler.ClearRightCanvas();
+        requestHandler.enableUI();
         return null;
     }
 }

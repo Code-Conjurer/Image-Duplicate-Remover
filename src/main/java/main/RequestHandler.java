@@ -2,6 +2,8 @@ package main;
 
 
 import javafx.application.Platform;
+import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 
 enum DeleteResponse{
@@ -15,15 +17,19 @@ public class RequestHandler{
     private boolean isWaiting;
     private final ProgressHandler progressHandler;
     private final CanvasHandler canvasHandler;
+    private final MenuItem openMenuItem;
+    private final Button goButton;
     private ProgressRunnable progressRunnable;
     private DrawLeftRunnable drawLeftRunnable;
     private DrawRightRunnable drawRightRunnable;
     private ProgressResetRunnable progressResetRunnable;
 
-    public RequestHandler(Controller controller, ProgressHandler progressHandler,CanvasHandler canvasHandler){
+    public RequestHandler(Controller controller, ProgressHandler progressHandler,CanvasHandler canvasHandler, MenuItem openMenuItem, Button goButton){
         this.controller = controller;
         this.progressHandler = progressHandler;
         this.canvasHandler = canvasHandler;
+        this.openMenuItem = openMenuItem;
+        this.goButton = goButton;
         progressRunnable = new ProgressRunnable();
         drawLeftRunnable = new DrawLeftRunnable();
         drawRightRunnable = new DrawRightRunnable();
@@ -124,6 +130,11 @@ public class RequestHandler{
                 progressHandler.setActions(numberOfActions);
             }
         });
+    }
+
+    public void enableUI(){
+        goButton.setDisable(false);
+        openMenuItem.setDisable(false);
     }
 
 
