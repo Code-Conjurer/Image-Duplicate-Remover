@@ -32,9 +32,11 @@ public class MainTask extends Task<Void> {
             requestHandler.ProgressUpdate();
             toCompare = list.get(i);
 
+
             sameFile = imageFile.getName().equals(toCompare.getName());
             hasEncountered = encounteredImageFiles.get(toCompare.getName()) != null;
             comparedIsDeleted = toCompare.isMarkedForDeletion();
+
             if ( !(sameFile || hasEncountered || comparedIsDeleted)) { //check that the compared image is not deleted, or has encountered original image
                 if (isMatch(imageFile, toCompare))
                     indexList.add(i);
@@ -96,6 +98,7 @@ public class MainTask extends Task<Void> {
 
         for (final ImageFile leftImageFile : images) {
             if (!leftImageFile.isMarkedForDeletion()) {
+                requestHandler.DrawLeft(leftImageFile.getImage());
                 matchingImageIndexes = findForMatches(leftImageFile, images, encounteredImageFiles);
 
                 for (Integer index : matchingImageIndexes) {
