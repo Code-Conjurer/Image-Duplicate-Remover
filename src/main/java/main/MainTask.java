@@ -123,6 +123,7 @@ public class MainTask extends Task<Void> {
 
         requestHandler.ClearLeftCanvas();
         requestHandler.ClearRightCanvas();
+        requestHandler.ProgressReset();
         requestHandler.enableUI();
         return null;
     }

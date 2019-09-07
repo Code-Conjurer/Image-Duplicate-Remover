@@ -47,7 +47,7 @@ public class Controller{
     private CanvasHandler canvasHandler;
     private RequestHandler requestHandler;
     private Thread taskThread;
-    private String directoryName, leftImageName, rightImageName;
+    private String directoryName, leftImageNameAndSize, rightImageNameAndSize;
 
     //Requires theStage to have been set
     public void initialize(){
@@ -63,8 +63,8 @@ public class Controller{
         taskThread = new Thread();  //dummy thread
 
         directoryName = null;
-        leftImageName = null;
-        rightImageName = null;
+        leftImageNameAndSize = null;
+        rightImageNameAndSize = null;
         skipButton.setDisable(true);
     }
 
@@ -99,8 +99,8 @@ public class Controller{
 
     @FXML
     public void leftCanvasEntered(){
-        if(leftImageName != null)
-            directoryLabel.setText(leftImageName);
+        if(leftImageNameAndSize != null)
+            directoryLabel.setText(leftImageNameAndSize);
     }
 
     @FXML
@@ -110,8 +110,8 @@ public class Controller{
 
     @FXML
     public void rightCanvasEntered(){
-        if(rightImageName != null)
-            directoryLabel.setText(rightImageName);
+        if(rightImageNameAndSize != null)
+            directoryLabel.setText(rightImageNameAndSize);
     }
 
     @FXML
@@ -139,8 +139,8 @@ public class Controller{
             if (requestHandler.isWaiting()) {
                 requestHandler.setDeleteResponse(deleteResponse);
                 skipButton.setDisable(true);
-                leftImageName = null;
-                rightImageName = null;
+                leftImageNameAndSize = null;
+                rightImageNameAndSize = null;
                 requestHandler.wakeUp();
             }
         }
@@ -150,8 +150,14 @@ public class Controller{
     public void signalDeletion(ImageFile imageFileLeft, ImageFile imageFileRight) {
         synchronized (this) {
             skipButton.setDisable(false);
+            String leftImageName, leftImageSize, rightImageName, rightImageSize;
             leftImageName = imageFileLeft.getName();
             rightImageName = imageFileRight.getName();
+            leftImageSize = imageFileLeft.getImage().getWidth() + " x " + imageFileLeft.getImage().getHeight();
+            rightImageSize = imageFileRight.getImage().getWidth() + " x " + imageFileRight.getImage().getHeight();
+
+            leftImageNameAndSize = leftImageName   + "  " + leftImageSize;
+            rightImageNameAndSize = rightImageName + "  " + rightImageSize;
         }
     }
 }

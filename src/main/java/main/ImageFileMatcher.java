@@ -3,13 +3,14 @@ package main;
 import com.github.kilianB.hash.Hash;
 import com.github.kilianB.hashAlgorithms.AverageHash;
 import com.github.kilianB.hashAlgorithms.HashingAlgorithm;
+import com.github.kilianB.hashAlgorithms.PerceptiveHash;
 
 import java.io.IOException;
 
 public class ImageFileMatcher{
 
-    final static int KEY_BIT_RESOLUTION = 256;
-    final static HashingAlgorithm hasher = new AverageHash(KEY_BIT_RESOLUTION);
+    final static int KEY_BIT_RESOLUTION = 2 << 8; //2 ^ ...
+    final static HashingAlgorithm hasher = new PerceptiveHash(KEY_BIT_RESOLUTION);
 
     public static HashingAlgorithm getHasher(){
         return hasher;
