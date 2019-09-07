@@ -24,13 +24,18 @@ public class MainTask extends Task<Void> {
         return selectedDirectory.listFiles(new ImageFileFiler());
     }
 
-    private ArrayList<Integer> findForMatches(ImageFile imageFile, List<ImageFile> list, Map<String, String> encounteredImageFiles) {
+    private ArrayList<Integer> findForMatches(ImageFile imageFile, List<ImageFile> list, Map<String, String> encounteredImageFiles)throws IOException {
         ArrayList<Integer> indexList = new ArrayList<>(0);
         ImageFile toCompare;
         boolean sameFile, hasEncountered, comparedIsDeleted;
         for (int i = 0; i < list.size(); i++) {
             requestHandler.ProgressUpdate();
             toCompare = list.get(i);
+
+            if(ImageFileManager.isThresholdReached()) {
+                System.out.println("allocating...");
+                allocateSpace(list, i);
+            }
 
             sameFile = imageFile.getName().equals(toCompare.getName());
             hasEncountered = encounteredImageFiles.get(toCompare.getName()) != null;
@@ -44,7 +49,7 @@ public class MainTask extends Task<Void> {
         return indexList;
     }
 
-    private boolean isMatch(ImageFile image1, ImageFile image2) {
+    private boolean isMatch(ImageFile image1, ImageFile image2)throws IOException {
         return ImageFileMatcher.isDuplicate(image1.getImageHash(), image2.getImageHash());
     }
 
@@ -72,6 +77,11 @@ public class MainTask extends Task<Void> {
         }
     }
 
+    private void allocateSpace(List<ImageFile> list, int i){
+        ImageFileManager.deactivate(list, i, ImageFileManager.getActiveImageFiles());
+        ImageFileManager.activate(list, i, ImageFileManager.getActiveImageFiles());
+    }
+
     protected Void call() throws IOException {
 
         File[] imageFilesDir = createFileArray();
@@ -96,6 +106,7 @@ public class MainTask extends Task<Void> {
 
         for (final ImageFile leftImageFile : images) {
             if (!leftImageFile.isMarkedForDeletion()) {
+                //leftImageFile.setImageHash();
                 matchingImageIndexes = findForMatches(leftImageFile, images, encounteredImageFiles);
 
                 for (Integer index : matchingImageIndexes) {
@@ -118,6 +129,7 @@ public class MainTask extends Task<Void> {
                         System.exit(1);
                     }
                 }
+                //leftImageFile.clearImageHash();
             }
         }
 

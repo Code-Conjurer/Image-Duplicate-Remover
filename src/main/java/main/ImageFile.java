@@ -13,15 +13,29 @@ public class ImageFile{
     private Hash imageHash;
     private boolean markForDeletion = false;
 
-    public ImageFile (File file) throws IOException{
+    public ImageFile (File file)throws IOException{
         this.file = file;
-        imageHash = ImageFileMatcher.getHasher().hash(file);
+        if( ! ImageFileManager.isThresholdReached() )
+            setImageHash();
+        else
+            imageHash = null;
     }
 
-    public Hash getImageHash(){
+    public Hash getImageHash()throws IOException{
+        if(imageHash == null){
+                setImageHash();
+        }
         return imageHash;
     }
-
+    public void setImageHash()throws IOException{
+        ImageFileManager.activateImageFile();
+        imageHash = ImageFileMatcher.getHasher().hash(file);
+    }
+    public void clearImageHash(){
+        if(imageHash == null) return;
+        ImageFileManager.deactivateImageFile();
+        imageHash = null;
+    }
     public File getFile() {
         return file;
     }
